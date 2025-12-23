@@ -1,0 +1,89 @@
+services:
+  # Open SWE Agent - LangGraph-based coding agent
+  agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: agent
+    container_name: open-swe-agent
+    ports:
+      - "2024:2024"
+    environment:
+      # LangSmith tracing
+      - LANGCHAIN_PROJECT=${LANGCHAIN_PROJECT:-default}
+      - LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY}
+      - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2:-true}
+      - LANGCHAIN_TEST_TRACKING=${LANGCHAIN_TEST_TRACKING:-false}
+      
+      # LLM Provider Keys
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      
+      # Infrastructure
+      - DAYTONA_API_KEY=${DAYTONA_API_KEY}
+      
+      # Tools
+      - FIRECRAWL_API_KEY=${FIRECRAWL_API_KEY}
+      
+      # GitHub App Configuration
+      - GITHUB_APP_NAME=${GITHUB_APP_NAME}
+      - GITHUB_APP_ID=${GITHUB_APP_ID}
+      - GITHUB_APP_PRIVATE_KEY=${GITHUB_APP_PRIVATE_KEY}
+      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
+      - GITHUB_TRIGGER_USERNAME=${GITHUB_TRIGGER_USERNAME:-open-swe}
+      
+      # Other Configuration
+      - PORT=2024
+      - OPEN_SWE_APP_URL=${OPEN_SWE_APP_URL:-http://localhost:3000}
+      - SECRETS_ENCRYPTION_KEY=${SECRETS_ENCRYPTION_KEY}
+      - SKIP_CI_UNTIL_LAST_COMMIT=${SKIP_CI_UNTIL_LAST_COMMIT:-true}
+      - NODE_ENV=production
+    volumes:
+      # Mount for persistent data if needed
+      - agent-data:/app/data
+    restart: unless-stopped
+    networks:
+      - open-swe-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:2024/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Open SWE Web - Next.js web application
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    container_name: open-swe-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - NEXT_PUBLIC_AGENT_URL=${NEXT_PUBLIC_AGENT_URL:-http://agent:2024}
+      - NEXT_PUBLIC_ALLOWED_USERS_LIST=${NEXT_PUBLIC_ALLOWED_USERS_LIST:-[]}
+      - SECRETS_ENCRYPTION_KEY=${SECRETS_ENCRYPTION_KEY}
+    depends_on:
+      agent:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - open-swe-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  agent-data:
+    driver: local
+
+networks:
+  open-swe-network:
+    driver: bridge
