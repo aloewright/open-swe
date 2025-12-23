@@ -4149,7 +4149,7 @@ __metadata:
     "@eslint/eslintrc": ^3.1.0
     "@eslint/js": ^9.19.0
     "@jest/globals": ^29.7.0
-    "@langchain/core": ^0.3.65
+    "@langchain/core": ^0.3.80
     "@langchain/langgraph-cli": ^0.0.47
     "@openswe/shared": "*"
     "@tsconfig/recommended": ^1.0.8
@@ -4182,7 +4182,7 @@ __metadata:
     "@jest/globals": ^29.7.0
     "@langchain/anthropic": ^0.3.26
     "@langchain/community": ^0.3.47
-    "@langchain/core": ^0.3.65
+    "@langchain/core": ^0.3.80
     "@langchain/google-genai": ^0.2.9
     "@langchain/langgraph": ^0.3.8
     "@langchain/langgraph-cli": ^0.0.47
@@ -4273,7 +4273,7 @@ __metadata:
     "@eslint/eslintrc": ^3.1.0
     "@eslint/js": ^9.19.0
     "@jest/globals": ^29.7.0
-    "@langchain/core": ^0.3.65
+    "@langchain/core": ^0.3.80
     "@langchain/langgraph": ^0.3.8
     "@langchain/langgraph-sdk": ^0.0.95
     "@octokit/rest": ^22.0.0
@@ -4303,7 +4303,7 @@ __metadata:
   resolution: "@openswe/web@workspace:apps/web"
   dependencies:
     "@eslint/js": ^9.19.0
-    "@langchain/core": ^0.3.65
+    "@langchain/core": ^0.3.80
     "@langchain/langgraph": ^0.3.8
     "@langchain/langgraph-sdk": ^0.0.95
     "@octokit/app": ^16.0.1
